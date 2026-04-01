@@ -20,5 +20,9 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # ...existing code...
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # JwtDecorator removed - Using Nelmio API Doc without JWT decorator

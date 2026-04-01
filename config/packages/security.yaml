@@ -1,0 +1,29 @@
+security:
+    password_hashers:
+        App\Entity\Users: 'auto'
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Users
+                property: nom  # Utiliser le nom comme identifiant
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: api_login
+                check_path: api_login_check
+                enable_csrf: false
+            logout:
+                path: api_logout
+                target: api_login
+
+    access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/users, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

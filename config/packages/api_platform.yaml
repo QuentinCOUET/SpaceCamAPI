@@ -1,0 +1,10 @@
+# API Platform disabled - Using Nelmio API Doc for documentation
+# Uncomment below to re-enable API Platform
+# api_platform:
+#     title: Hello API Platform
+#     version: 1.0.0
+#     defaults:
+#         stateless: true
+#         cache_headers:
+#             vary: ['Content-Type', 'Authorization', 'Origin']
+
