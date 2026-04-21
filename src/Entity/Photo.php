@@ -62,6 +62,11 @@ class Photo
     #[Groups(['photo:read', 'photo:write'])]
     private ?Cam $cam = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
