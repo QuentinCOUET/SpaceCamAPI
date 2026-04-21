@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 
 #[Route('/api')]
-#[OA\Tag(name: 'Authentication')]
 class AuthController extends AbstractController
 {
     /**
@@ -95,112 +94,17 @@ class AuthController extends AbstractController
         }
     }
 
+
     /**
-     * Login user (form-based)
+     * This is a dummy route for JWT token generation.
+     * The request is intercepted by the json_login firewall.
      */
     #[Route('/login', name: 'api_login', methods: ['POST'])]
-    #[OA\Response(
-        response: 200,
-        description: 'Login page or form',
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'message', type: 'string', example: 'Send POST with nom and password'),
-            ]
-        )
-    )]
     public function login(): JsonResponse
     {
-        $user = $this->getUser();
-
-        if ($user) {
-            return new JsonResponse([
-                'message' => 'Already logged in',
-                'user' => $user->getNom(),
-            ]);
-        }
-
-        return new JsonResponse([
-            'message' => 'Send POST request with nom and password in form data',
-            'example' => [
-                'nom' => 'john',
-                'password' => 'password123',
-            ],
-        ]);
+        // This code is never executed.
+        throw new \LogicException('This code should not be reached. The json_login firewall listener should have intercepted this request.');
     }
-
-    /**
-     * Check login (Custom authentication)
-     */
-    #[Route('/login_check', name: 'api_login_check', methods: ['POST'])]
-    #[OA\Response(
-        response: 200,
-        description: 'Successfully logged in',
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'id', type: 'integer', example: 1),
-                new OA\Property(property: 'nom', type: 'string', example: 'john'),
-                new OA\Property(property: 'prenom', type: 'string', example: 'John Doe'),
-            ]
-        )
-    )]
-    #[OA\RequestBody(
-        description: 'Login credentials',
-        required: true,
-        content: new OA\JsonContent(
-            required: ['nom', 'password'],
-            properties: [
-                new OA\Property(property: 'nom', type: 'string', example: 'alice'),
-                new OA\Property(property: 'password', type: 'string', example: 'Password123'),
-            ]
-        )
-    )]
-    public function loginCheck(
-        Request $request,
-        UsersRepository $usersRepository,
-        SerializerInterface $serializer,
-        \Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface $passwordHasher
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-
-        if (!isset($data['nom'], $data['password'])) {
-            return new JsonResponse(
-                ['error' => 'Missing nom or password'],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        // Rechercher l'utilisateur
-        $user = $usersRepository->findOneBy(['nom' => $data['nom']]);
-
-        if (!$user) {
-            return new JsonResponse(
-                ['error' => 'Invalid credentials'],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        // Vérifier le mot de passe
-        if (!$passwordHasher->isPasswordValid($user, $data['password'])) {
-            return new JsonResponse(
-                ['error' => 'Invalid credentials'],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        // Créer la session - Symfony va gérer automatiquement le cookie
-        $this->container->get('security.token_storage')->setToken(
-            new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
-                $user,
-                'main',
-                $user->getRoles()
-            )
-        );
-
-        $serialized = $serializer->serialize($user, 'json', ['groups' => 'user:read']);
-
-        return new JsonResponse($serialized, Response::HTTP_OK, [], true);
-    }
-
 
     /**
      * Get current user info

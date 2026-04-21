@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,10 @@ use OpenApi\Attributes as OA;
 
 
 #[ORM\Entity(repositoryClass: CamRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['cam:read']],
+    denormalizationContext: ['groups' => ['cam:write']]
+)]
 #[OA\Schema(
     schema: "Cam",
     properties: [
@@ -44,15 +49,15 @@ class Cam
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['cam:read', 'photo:read'])]
+    #[Groups(['cam:read', 'photo:read', 'cam:write'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['cam:read'])]
+    #[Groups(['cam:read', 'cam:write'])]
     private ?string $videoUrl = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['cam:read'])]
+    #[Groups(['cam:read', 'cam:write'])]
     private ?string $ipCam = null;
 
     #[ORM\Column]

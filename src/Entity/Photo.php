@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PhotoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,6 +15,10 @@ use OpenApi\Attributes as OA;
 
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['photo:read']],
+    denormalizationContext: ['groups' => ['photo:write']]
+)]
 #[OA\Schema(
     schema: "Photo",
     properties: [
@@ -42,11 +47,11 @@ class Photo
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['photo:read'])]
+    #[Groups(['photo:read', 'photo:write'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['photo:read'])]
+    #[Groups(['photo:read', 'photo:write'])]
     private ?string $imageUrl = null;
 
     #[ORM\Column]
@@ -54,7 +59,7 @@ class Photo
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
-    #[Groups(['photo:read'])]
+    #[Groups(['photo:read', 'photo:write'])]
     private ?Cam $cam = null;
 
     public function getId(): ?int

@@ -11,15 +11,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            lazy: true
+            stateless: true
             provider: app_user_provider
-            form_login:
-                login_path: api_login
-                check_path: api_login_check
-                enable_csrf: false
-            logout:
-                path: api_logout
-                target: api_login
+            json_login:
+                check_path: /api/login
+                username_path: nom
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
 
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
